@@ -1,4 +1,3 @@
-from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
@@ -104,30 +103,39 @@ class Pdf:
         # Create card objects
         new_card = Card()
 
-        # Calculate the y-coordinate based on self.card_count
-        y_coordinate = 609 - self.card_count * 198
-
-        
         # Set the text and subtext attributes and define the boder
         new_card.front.text = front_text
         new_card.front.subtext = front_subtext
-        new_card.front.border = RoundedRectangle(15, y_coordinate, 276, 168, 10)
 
         new_card.back.text = back_text
         new_card.back.subtext = back_subtext
-        new_card.back.border = RoundedRectangle(321, y_coordinate, 276, 168, 10)
 
-        # Increment the card_count variable for the next card
+        # Set border for the card
+        if self.card_count % 4 == 0:
+            new_card.front.border = RoundedRectangle(15, 609, 276, 168, 10)
+            new_card.back.border = RoundedRectangle(321, 609, 276, 168, 10)
+        elif self.card_count % 4 == 1:
+            new_card.front.border = RoundedRectangle(15, 411, 276, 168, 10)
+            new_card.back.border = RoundedRectangle(321, 411, 276, 168, 10)
+        elif self.card_count % 4 == 2:
+            new_card.front.border = RoundedRectangle(15, 213, 276, 168, 10)
+            new_card.back.border = RoundedRectangle(321, 213, 276, 168, 10)
+        elif self.card_count % 4 == 3:
+            new_card.front.border = RoundedRectangle(15, 15, 276, 168, 10)
+            new_card.back.border = RoundedRectangle(321, 15, 276, 168, 10)
+        else:
+            print("Error in placing cards on canvas")
+
         self.card_count += 1
-
         self.list_cards.append(new_card)
 
-
     def exportPdf(self):
+        print_count = 0
+
         for card in self.list_cards:
-            if self.card_count % self.cards_per_page == 0 and self.card_count != 0:
+            if print_count % self.cards_per_page == 0 and print_count != 0:
                 self.my_canvas.showPage()  # Create a new page if the card_count is a multiple of cards_per_page
             card.drawCard(self.my_canvas)
-            self.card_count += 1
+            print_count += 1
         # Save the canvas
         self.my_canvas.save()
