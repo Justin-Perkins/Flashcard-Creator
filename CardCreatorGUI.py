@@ -57,7 +57,7 @@ class App(customtkinter.CTk):
 
     def add_card_button_event(self):
         self.num_cards += 1
-        print(f"Number of cards: {self.num_cards}")
+        
         new_card_frame = customtkinter.CTkFrame(self.scrollable_frame, width=300, height=100, corner_radius=5, border_width=2, fg_color='#404040')
         new_card_frame.pack(pady=10, fill="x")
 
@@ -95,24 +95,25 @@ class App(customtkinter.CTk):
             tkinter.messagebox.showinfo("Warning", "Please enter a file name before exporting the flash cards.")
         # Both file name and folder path have been selected
         elif folder_path: 
-            print("Selected folder:", folder_path)
-            print(f"Exported {file_name}.pdf")
-
             pdf = cp.Pdf(file_name)
 
             for count, card in enumerate(self.card_entries):
-                print(f"Card Entry: {card.get()}")
-                
                 if count % 4 == 0:
                     front_text = card.get()
                 elif count % 4 == 1:
-                    front_subtext = card.get()
+                    if card.get() != "":
+                        front_subtext = f"({card.get()})"
+                    else:
+                        front_subtext = ""
                 elif count % 4 == 2:
                     back_text = card.get()
                 elif count % 4 == 3:
-                    back_subtext = card.get()
+                    if card.get() != "":
+                        back_subtext = f"({card.get()})"
+                    else:
+                        back_subtext = ""
 
-                    # Add card to pdf
+                    # Add completed card to pdf
                     pdf.addCard(front_text, front_subtext, back_text, back_subtext)
             
             # Export Pdf
