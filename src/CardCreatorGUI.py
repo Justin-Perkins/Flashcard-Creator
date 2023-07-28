@@ -15,6 +15,7 @@ class App(customtkinter.CTk):
         # Configure window
         self.title("Flashcard Creator")
         self.geometry(f"{1100}x{580}")
+        self.iconbitmap("assets\\images\\icon_128x128.ico")
 
         # Configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
