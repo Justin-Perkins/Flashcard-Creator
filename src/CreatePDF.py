@@ -1,8 +1,10 @@
+import os
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
+import shutil
 
 class RoundedRectangle:
     def __init__(self, x, y, width, height, radius, line_thickness = 5):
@@ -88,6 +90,7 @@ class Card:
 
 class Pdf:
     def __init__(self, filename):
+        self.filename = filename
         # Register the fonts
         registerFont(TTFont("Noto Sans Bold", "fonts\\Noto_Sans_JP\\static\\NotoSansJP-Bold.ttf"))
         registerFont(TTFont("Noto Sarif", "fonts\\Noto_Serif\\static\\NotoSerif-Regular.ttf"))
@@ -129,11 +132,16 @@ class Pdf:
         self.card_count += 1
         self.list_cards.append(new_card)
 
-    def exportPdf(self):
+    def exportPdf(self, folder_path):
         for count, card in enumerate(self.list_cards):
             if count % self.cards_per_page == 0 and count != 0:
                 self.my_canvas.showPage()  # Create a new page if the card_count is a multiple of cards_per_page
             card.drawCard(self.my_canvas)
             count += 1
+
         # Save the canvas
         self.my_canvas.save()
+
+        # Move File to the specified file path
+        output_file_path = os.path.join(folder_path, f"{self.filename}.pdf")
+        shutil.move(f"{self.filename}.pdf", output_file_path)

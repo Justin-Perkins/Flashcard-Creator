@@ -118,7 +118,7 @@ class App(customtkinter.CTk):
                     pdf.addCard(front_text, front_subtext, back_text, back_subtext)
             
             # Export Pdf
-            pdf.exportPdf()
+            pdf.exportPdf(folder_path)
         else:
             print("Exporting process canceled.")
 
