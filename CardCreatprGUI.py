@@ -93,25 +93,32 @@ class App(customtkinter.CTk):
         # Check if there if a folder has been selected and a filename has been entered
         if not file_name:
             tkinter.messagebox.showinfo("Warning", "Please enter a file name before exporting the flash cards.")
-        elif folder_path:
+        # Both file name and folder path have been selected
+        elif folder_path: 
             print("Selected folder:", folder_path)
             print(f"Exported {file_name}.pdf")
+
+            pdf = cp.Pdf(file_name)
+
+            for count, card in enumerate(self.card_entries):
+                print(f"Card Entry: {card.get()}")
+                
+                if count % 4 == 0:
+                    front_text = card.get()
+                elif count % 4 == 1:
+                    front_subtext = card.get()
+                elif count % 4 == 2:
+                    back_text = card.get()
+                elif count % 4 == 3:
+                    back_subtext = card.get()
+
+                    # Add card to pdf
+                    pdf.addCard(front_text, front_subtext, back_text, back_subtext)
+            
+            # Export Pdf
+            pdf.exportPdf()
         else:
             print("Exporting process canceled.")
-
-        for count, card in enumerate(self.card_entries):
-            print(f"Card Entry: {card.get()}")
-            
-            if count % 4 == 0:
-                front_text = card.get()
-            elif count % 4 == 1:
-                front_subtext = card.get()
-            elif count % 4 == 2:
-                back_text = card.get()
-            elif count % 4 == 3:
-                back_subtext = card.get()
-
-
 
     def translate_mode_switch_event(self):
         state = self.translate_mode_switch.get()
