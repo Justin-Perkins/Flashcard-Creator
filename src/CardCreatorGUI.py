@@ -1,12 +1,16 @@
+# Standard Library Imports
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
+
+# Third-Party Library Imports
 import customtkinter
 import CreatePDF as cp
+from translate import Translator
+import pykakasi
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
-
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -98,36 +102,61 @@ class App(customtkinter.CTk):
         elif folder_path: 
             pdf = cp.Pdf(file_name)
 
-            for count, card in enumerate(self.card_entries):
-                if count % 4 == 0:
-                    front_text = card.get()
-                elif count % 4 == 1:
-                    if card.get() != "":
-                        front_subtext = f"({card.get()})"
-                    else:
-                        front_subtext = ""
-                elif count % 4 == 2:
-                    back_text = card.get()
-                elif count % 4 == 3:
-                    if card.get() != "":
-                        back_subtext = f"({card.get()})"
-                    else:
-                        back_subtext = ""
+            if self.translate_mode_switch.get() == 0:
+                for count, entry in enumerate(self.card_entries):
+                    if count % 4 == 0:
+                        front_text = entry.get()
+                    elif count % 4 == 1:
+                        if entry.get() != "":
+                            front_subtext = f"({entry.get()})"
+                        else:
+                            front_subtext = ""
+                    elif count % 4 == 2:
+                        back_text = entry.get()
+                    elif count % 4 == 3:
+                        if entry.get() != "":
+                            back_subtext = f"({entry.get()})"
+                        else:
+                            back_subtext = ""
 
-                    # Add completed card to pdf
-                    pdf.addCard(front_text, front_subtext, back_text, back_subtext)
-            
+                        # Add completed card to pdf
+                        pdf.addCard(front_text, front_subtext, back_text, back_subtext)
+
+            elif self.translate_mode_switch.get() == 1:
+                for count, entry in enumerate(self.card_entries):
+                    if count % 4 == 0:
+                        front_text = entry.get()
+
+                        self.translated_text = self.translator.translate(entry.get())
+                        result = self.kks.convert(self.translated_text)
+                        self.romanized_text = ''.join([item['hepburn'] for item in result])
+                    elif count % 4 == 1:
+                        if entry.get() != "":
+                            front_subtext = f"({entry.get()})"
+                        else:
+                            front_subtext = ""
+                    elif count % 4 == 2:
+                        back_text = self.translated_text
+                    elif count % 4 == 3:
+                        back_subtext = f"({self.romanized_text})"
+
+                        # Add completed card to pdf
+                        pdf.addCard(front_text, front_subtext, back_text, back_subtext)
+
             # Export Pdf
             pdf.exportPdf(folder_path)
         else:
             print("Exporting process canceled.")
 
     def translate_mode_switch_event(self):
-        state = self.translate_mode_switch.get()
+        translate_mode_state = self.translate_mode_switch.get()
 
-        if(state == 1):
+        if(translate_mode_state == 1):
             self.start_language_menu.configure(state='normal')
             self.end_language_menu.configure(state='normal')
+
+            self.translator = Translator(from_lang="en", to_lang="ja")
+            self.kks = pykakasi.kakasi()
         else:
             self.start_language_menu.configure(state='disabled')
             self.end_language_menu.configure(state='disabled')
@@ -136,3 +165,4 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
+    

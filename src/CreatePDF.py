@@ -1,10 +1,14 @@
+# Standard Library Imports
 import os
+import shutil
+
+# Third-Party Library Imports
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.pdfmetrics import registerFont
 from reportlab.pdfbase.ttfonts import TTFont
-import shutil
+from reportlab.pdfbase.pdfmetrics import registerFont
+
 
 class RoundedRectangle:
     def __init__(self, x, y, width, height, radius, line_thickness = 5):
