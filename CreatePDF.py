@@ -87,77 +87,47 @@ class Card:
         self.front.drawFace(c)
         self.back.drawFace(c)
 
-# Register the fonts
-registerFont(TTFont("Noto Sans Bold", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSansJP-Bold.ttf"))
-registerFont(TTFont("Noto Sarif", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSerif-Regular.ttf"))
+class Pdf:
+    def __init__(self, filename):
+        # Register the fonts
+        registerFont(TTFont("Noto Sans Bold", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSansJP-Bold.ttf"))
+        registerFont(TTFont("Noto Sarif", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSerif-Regular.ttf"))
 
-# Create card objects
-card1 = Card()
-card2 = Card()
-card3 = Card()
-card4 = Card()
-card5 = Card()
+        # Create the canvas
+        self.my_canvas = canvas.Canvas(f"{filename}.pdf", pagesize=letter)
 
-# Set the text and subtext attributes and define the boder
-#Card 1
-card1.front.text = "駅"
-card1.front.subtext = "(eki)"
-card1.front.border = RoundedRectangle(15, 609, 276, 168, 10)
+        self.list_cards = []
+        self.cards_per_page = 4
+        self.card_count = 0
 
-card1.back.text = "Train Station"
-card1.back.subtext = ""
-card1.back.border = RoundedRectangle(321, 609, 276, 168, 10)
+    def addCard(self, front_text, front_subtext, back_text, back_subtext):
+        # Create card objects
+        new_card = Card()
 
-#Card 2
-card2.front.text = "郵便局"
-card2.front.subtext = "(yūbin kyoku)"
-card2.front.border = RoundedRectangle(15, 411, 276, 168, 10)
+        # Calculate the y-coordinate based on self.card_count
+        y_coordinate = 609 - self.card_count * 198
 
-card2.back.text = "Post Office"
-card2.back.subtext = ""
-card2.back.border = RoundedRectangle(321, 411, 276, 168, 10)
+        
+        # Set the text and subtext attributes and define the boder
+        new_card.front.text = front_text
+        new_card.front.subtext = front_subtext
+        new_card.front.border = RoundedRectangle(15, y_coordinate, 276, 168, 10)
 
-#Card 3
-card3.front.text = "雑誌"
-card3.front.subtext = "(zasshi)"
-card3.front.border = RoundedRectangle(15, 213, 276, 168, 10)
+        new_card.back.text = back_text
+        new_card.back.subtext = back_subtext
+        new_card.back.border = RoundedRectangle(321, y_coordinate, 276, 168, 10)
 
-card3.back.text = "Magazine"
-card3.back.subtext = ""
-card3.back.border = RoundedRectangle(321, 213, 276, 168, 10)
+        # Increment the card_count variable for the next card
+        self.card_count += 1
 
-#Card 4
-card4.front.text = "新聞"
-card4.front.subtext = "(shinbun)"
-card4.front.border = RoundedRectangle(15, 15, 276, 168, 10)
+        self.list_cards.append(new_card)
 
-card4.back.text = "Newspaper"
-card4.back.subtext = ""
-card4.back.border = RoundedRectangle(321, 15, 276, 168, 10)
 
-#Card 5
-card5.front.text = "テレビ"
-card5.front.subtext = "(terebi)"
-card5.front.border = RoundedRectangle(15, 609, 276, 168, 10)
-
-card5.back.text = "Tv"
-card5.back.subtext = ""
-card5.back.border = RoundedRectangle(321, 609, 276, 168, 10)
-
-# Create the canvas
-my_canvas = canvas.Canvas('Flashcards.pdf', pagesize=letter)
-
-cards = [card1, card2, card3, card4, card5]  # Add more cards to this list as needed
-
-cards_per_page = 4
-card_count = 0
-
-# Draw the rounded rectangles for each card in two columns and handle page breaks
-for card in cards:
-    if card_count % cards_per_page == 0 and card_count != 0:
-        my_canvas.showPage()  # Create a new page if the card_count is a multiple of cards_per_page
-    card.drawCard(my_canvas)
-    card_count += 1
-
-# Save the canvas
-my_canvas.save()
+    def exportPdf(self):
+        for card in self.list_cards:
+            if self.card_count % self.cards_per_page == 0 and self.card_count != 0:
+                self.my_canvas.showPage()  # Create a new page if the card_count is a multiple of cards_per_page
+            card.drawCard(self.my_canvas)
+            self.card_count += 1
+        # Save the canvas
+        self.my_canvas.save()
