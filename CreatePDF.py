@@ -89,8 +89,8 @@ class Card:
 class Pdf:
     def __init__(self, filename):
         # Register the fonts
-        registerFont(TTFont("Noto Sans Bold", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSansJP-Bold.ttf"))
-        registerFont(TTFont("Noto Sarif", "C:\\Users\\ws_justin.perkins3\\AppData\\Local\\Microsoft\\Windows\\Fonts\\NotoSerif-Regular.ttf"))
+        registerFont(TTFont("Noto Sans Bold", "fonts\\Noto_Sans_JP\\static\\NotoSansJP-Bold.ttf"))
+        registerFont(TTFont("Noto Sarif", "fonts\\Noto_Serif\\static\\NotoSerif-Regular.ttf"))
 
         # Create the canvas
         self.my_canvas = canvas.Canvas(f"{filename}.pdf", pagesize=letter)
