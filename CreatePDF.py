@@ -130,12 +130,10 @@ class Pdf:
         self.list_cards.append(new_card)
 
     def exportPdf(self):
-        print_count = 0
-
-        for card in self.list_cards:
-            if print_count % self.cards_per_page == 0 and print_count != 0:
+        for count, card in enumerate(self.list_cards):
+            if count % self.cards_per_page == 0 and count != 0:
                 self.my_canvas.showPage()  # Create a new page if the card_count is a multiple of cards_per_page
             card.drawCard(self.my_canvas)
-            print_count += 1
+            count += 1
         # Save the canvas
         self.my_canvas.save()
