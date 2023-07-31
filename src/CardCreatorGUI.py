@@ -157,9 +157,21 @@ class App(customtkinter.CTk):
 
             self.translator = Translator(from_lang="en", to_lang="ja")
             self.kks = pykakasi.kakasi()
+
+            for count, entry in enumerate(self.card_entries):
+                if count % 4 == 2:
+                    entry.configure(state='disabled')
+                elif count % 4 == 3:
+                    entry.configure(state='disabled')
         else:
             self.start_language_menu.configure(state='disabled')
             self.end_language_menu.configure(state='disabled')
+
+            for count, entry in enumerate(self.card_entries):
+                if count % 4 == 2:
+                    entry.configure(state='normal')
+                elif count % 4 == 3:
+                    entry.configure(state='normal')
 
 
 if __name__ == "__main__":
