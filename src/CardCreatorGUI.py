@@ -5,10 +5,12 @@ from tkinter import filedialog
 
 # Third-Party Library Imports
 import customtkinter
-import CreatePDF as cp
-import CreateCSV
 from translate import Translator
 import pykakasi
+
+# Custom Class Imports
+import CreatePDF as cp
+import CreateCSV
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
