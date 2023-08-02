@@ -6,6 +6,7 @@ from tkinter import filedialog
 # Third-Party Library Imports
 import customtkinter
 import CreatePDF as cp
+import CreateCSV
 from translate import Translator
 import pykakasi
 
@@ -172,6 +173,12 @@ class App(customtkinter.CTk):
                     entry.configure(state='normal')
                 elif count % 4 == 3:
                     entry.configure(state='normal')
+
+    def save_state_button_event(self):
+        folder_path = filedialog.askdirectory()
+
+        csv = CreateCSV.Csv(self.card_entries)
+        csv.exportCSV('cardSet.csv', folder_path)
 
 
 if __name__ == "__main__":

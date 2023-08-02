@@ -1,19 +1,21 @@
 # Standard Library Imports
 import csv
+import os
 
 class Csv:
     def __init__(self, list):
         self.data = list
     
-    def exportCSV(self, file_name, file_path):
-        
+    def exportCSV(self, file_name, folder_path):
+        file_path = os.path.join(folder_path, file_name)
+
         with open(file_path, mode="w", newline='') as file:
             writer = csv.writer(file)
 
             row = []
 
             for entry in self.data:
-                row.append(entry)
+                row.append(entry.get())
 
                 if len(row) == 4:
                     writer.writerow(row)
@@ -22,4 +24,3 @@ class Csv:
             # Write remaining entries to csv (should never happen)
             if len(row) > 0:
                 writer.writerow(row)
-
