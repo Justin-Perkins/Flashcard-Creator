@@ -49,6 +49,12 @@ class App(customtkinter.CTk):
         self.end_language_menu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Japanese"], state="disabled")
         self.end_language_menu.grid(row=4, column=0, padx=20, pady=10)
 
+        self.import_csv_button = customtkinter.CTkButton(self.sidebar_frame, text="Import CSV", command=self.import_from_csv_button_event)
+        self.import_csv_button.grid(row=5, column=0, padx=20, pady=10)
+
+        self.export_csv_button = customtkinter.CTkButton(self.sidebar_frame, text="Export CSV", command=self.export_to_csv_button_event)
+        self.export_csv_button.grid(row=6, column=0, padx=20, pady=10)
+
         # Create card entry frame
         self.scrollable_frame = customtkinter.CTkScrollableFrame(self)
         self.scrollable_frame.grid(row=0, column=1, columnspan=3, rowspan=3, padx=20, pady=(20, 0), sticky="nsew")
@@ -170,8 +176,30 @@ class App(customtkinter.CTk):
                 elif count % 4 == 3:
                     entry.configure(state='normal')
 
-    def save_state_button_event(self):
+    def export_to_csv_button_event(self):
         folder_path = filedialog.askdirectory()
+        translate_mode_state = self.translate_mode_switch.get()
+
+        # Translate text before export if nessissary
+        if translate_mode_state == 1:
+            for count, entry in enumerate(self.card_entries):
+                print(count)
+                if count % 4 == 0:
+                    text_to_translate = entry.get()
+                    self.translated_text = self.translator.translate(text_to_translate)
+                    result = self.kks.convert(self.translated_text)
+                    self.romanized_text = ''.join([item['hepburn'] for item in result])
+
+                    #print(translated_text)
+                    #print(romanized_text)
+                elif count % 4 == 2:
+                    #print(self.translated_text)
+                    entry.insert(0, self.translated_text)
+                    print(entry.get())
+                elif count % 4 == 3:
+                    #print(self.romanized_text)
+                    entry.insert(0, self.romanized_text)
+                    print(entry.get())
 
         csv = CreateCSV.Csv(self.card_entries)
         csv.exportCSV('cardSet.csv', folder_path)
@@ -185,6 +213,7 @@ class App(customtkinter.CTk):
     
         with open(file_path, "r") as file:
             csv_reader = csv.reader(file)
+
             for row in csv_reader:
                 self.add_card_button_event()
 

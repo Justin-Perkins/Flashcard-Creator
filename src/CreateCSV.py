@@ -9,7 +9,7 @@ class Csv:
     def exportCSV(self, file_name, folder_path):
         file_path = os.path.join(folder_path, file_name)
 
-        with open(file_path, mode="w", newline='') as file:
+        with open(file_path, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
 
             row = []
