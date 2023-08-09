@@ -1,4 +1,5 @@
 # Standard Library Imports
+import csv
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
@@ -175,7 +176,24 @@ class App(customtkinter.CTk):
         csv = CreateCSV.Csv(self.card_entries)
         csv.exportCSV('cardSet.csv', folder_path)
 
+    def import_from_csv_button_event(self):
+        file_path = filedialog.askopenfilename()
 
+        if not file_path:
+            tkinter.messagebox.showinfo("Warning", "Please select a valid CSV file before continuing.")
+            return
+    
+        with open(file_path, "r") as file:
+            csv_reader = csv.reader(file)
+            for row in csv_reader:
+                self.add_card_button_event()
+
+                for count, element in enumerate(row):
+                    self.card_entries[-4 + count].insert(0, element)
+
+            
+
+        
 if __name__ == "__main__":
     app = App()
     app.mainloop()
