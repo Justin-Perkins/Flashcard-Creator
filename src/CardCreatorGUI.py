@@ -96,60 +96,53 @@ class App(customtkinter.CTk):
     def finish_card_button_event(self):
         file_name = self.filename_entry.get()
 
-        folder_path = filedialog.askdirectory()
-
-        # Check if there if a folder has been selected and a filename has been entered
         if not file_name:
             tkinter.messagebox.showinfo("Warning", "Please enter a file name before exporting the flash cards.")
-        # Both file name and folder path have been selected
-        elif folder_path: 
-            pdf = cp.Pdf(file_name)
+            return
 
-            if self.translate_mode_switch.get() == 0:
-                for count, entry in enumerate(self.card_entries):
-                    if count % 4 == 0:
-                        front_text = entry.get()
-                    elif count % 4 == 1:
-                        if entry.get() != "":
-                            front_subtext = f"({entry.get()})"
-                        else:
-                            front_subtext = ""
-                    elif count % 4 == 2:
-                        back_text = entry.get()
-                    elif count % 4 == 3:
-                        if entry.get() != "":
-                            back_subtext = f"({entry.get()})"
-                        else:
-                            back_subtext = ""
-
-                        # Add completed card to pdf
-                        pdf.addCard(front_text, front_subtext, back_text, back_subtext)
-
-            elif self.translate_mode_switch.get() == 1:
-                for count, entry in enumerate(self.card_entries):
-                    if count % 4 == 0:
-                        front_text = entry.get()
-
-                        self.translated_text = self.translator.translate(entry.get())
-                        result = self.kks.convert(self.translated_text)
-                        self.romanized_text = ''.join([item['hepburn'] for item in result])
-                    elif count % 4 == 1:
-                        if entry.get() != "":
-                            front_subtext = f"({entry.get()})"
-                        else:
-                            front_subtext = ""
-                    elif count % 4 == 2:
-                        back_text = self.translated_text
-                    elif count % 4 == 3:
-                        back_subtext = f"({self.romanized_text})"
-
-                        # Add completed card to pdf
-                        pdf.addCard(front_text, front_subtext, back_text, back_subtext)
-
-            # Export Pdf
-            pdf.exportPdf(folder_path)
-        else:
+        folder_path = filedialog.askdirectory()
+        
+        if not folder_path:
             print("Exporting process canceled.")
+            return
+
+        pdf = cp.Pdf(file_name)
+        translate_mode = self.translate_mode_switch.get()
+
+        for count, entry in enumerate(self.card_entries):
+            if count % 4 == 0:
+                front_text = entry.get()
+
+                if translate_mode == 1:
+                    self.translated_text = self.translator.translate(entry.get())
+                    result = self.kks.convert(self.translated_text)
+                    self.romanized_text = ''.join([item['hepburn'] for item in result])
+            elif count % 4 == 1:
+                if entry.get():
+                    front_subtext = f"({entry.get()})"
+                else:
+                    front_subtext = ""
+            elif count % 4 == 2:
+                back_text = entry.get()
+                
+                if translate_mode == 1:
+                    back_text = self.translated_text
+            elif count % 4 == 3:
+                if entry.get():
+                    back_subtext = f"({entry.get()})"
+                else:
+                    back_subtext = ""
+                
+                if translate_mode == 1:
+                    if self.romanized_text:
+                        back_subtext = f"({self.romanized_text})"
+                    else:
+                        back_subtext = ""
+                
+                pdf.addCard(front_text, front_subtext, back_text, back_subtext)
+
+        pdf.exportPdf(folder_path)
+
 
     def translate_mode_switch_event(self):
         translate_mode_state = self.translate_mode_switch.get()
