@@ -180,29 +180,8 @@ class App(customtkinter.CTk):
         folder_path = filedialog.askdirectory()
         translate_mode_state = self.translate_mode_switch.get()
 
-        # Translate text before export if nessissary
-        if translate_mode_state == 1:
-            for count, entry in enumerate(self.card_entries):
-                print(count)
-                if count % 4 == 0:
-                    text_to_translate = entry.get()
-                    self.translated_text = self.translator.translate(text_to_translate)
-                    result = self.kks.convert(self.translated_text)
-                    self.romanized_text = ''.join([item['hepburn'] for item in result])
-
-                    #print(translated_text)
-                    #print(romanized_text)
-                elif count % 4 == 2:
-                    #print(self.translated_text)
-                    entry.insert(0, self.translated_text)
-                    print(entry.get())
-                elif count % 4 == 3:
-                    #print(self.romanized_text)
-                    entry.insert(0, self.romanized_text)
-                    print(entry.get())
-
         csv = CreateCSV.Csv(self.card_entries)
-        csv.exportCSV('cardSet.csv', folder_path)
+        csv.exportCSV('cardSet.csv', folder_path, translate_mode_state)
 
     def import_from_csv_button_event(self):
         file_path = filedialog.askopenfilename()
@@ -211,7 +190,7 @@ class App(customtkinter.CTk):
             tkinter.messagebox.showinfo("Warning", "Please select a valid CSV file before continuing.")
             return
     
-        with open(file_path, "r") as file:
+        with open(file_path, "r", encoding="utf-8-sig") as file:
             csv_reader = csv.reader(file)
 
             for row in csv_reader:
@@ -220,8 +199,7 @@ class App(customtkinter.CTk):
                 for count, element in enumerate(row):
                     self.card_entries[-4 + count].insert(0, element)
 
-            
-
+        file.close()
         
 if __name__ == "__main__":
     app = App()
