@@ -3,10 +3,12 @@ import csv
 import tkinter
 import tkinter.messagebox
 from tkinter import filedialog
+from itertools import chain
 
 # Third-Party Library Imports
 import customtkinter
 from translate import Translator
+from pypinyin import lazy_pinyin, pinyin
 import pykakasi
 
 # Custom Class Imports
@@ -19,6 +21,13 @@ customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "gre
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+
+        # Supported Languages
+        self.supported_starting_languages_abv = ["en"]
+        self.supported_starting_languages = ["English"]
+
+        self.supported_ending_languages_abv = ["jp", "zh"]
+        self.supported_ending_languages = ["Japanese", "Chinese (Mandarin)"]
 
         # Configure window
         self.title("Flashcard Creator")
@@ -43,10 +52,10 @@ class App(customtkinter.CTk):
         self.translate_mode_switch = customtkinter.CTkSwitch(self.sidebar_frame, text="Translate Mode", command=self.translate_mode_switch_event)
         self.translate_mode_switch.grid(row=2, column=0, padx=20, pady=10)
         
-        self.start_language_menu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["English"], state="disabled")
+        self.start_language_menu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=self.supported_starting_languages, state="disabled")
         self.start_language_menu.grid(row=3, column=0, padx=20, pady=10)
 
-        self.end_language_menu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Japanese"], state="disabled")
+        self.end_language_menu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=self.supported_ending_languages, command=self.update_translator, state="disabled")
         self.end_language_menu.grid(row=4, column=0, padx=20, pady=10)
 
         self.import_csv_button = customtkinter.CTkButton(self.sidebar_frame, text="Import CSV", command=self.import_from_csv_button_event)
@@ -122,8 +131,13 @@ class App(customtkinter.CTk):
 
                 if translate_mode == 1:
                     self.translated_text = self.translator.translate(entry.get())
-                    result = self.kks.convert(self.translated_text)
-                    self.romanized_text = ''.join([item['hepburn'] for item in result])
+                    if self.end_language == "Japanese":
+                        result = self.kks.convert(self.translated_text)
+                        self.romanized_text = ''.join([item['hepburn'] for item in result])
+                    elif self.end_language == "Chinese (Mandarin)":
+                        pinyin_text = pinyin(self.translated_text)
+                        flattened_pinyin_text = list(chain.from_iterable(pinyin_text))
+                        self.romanized_text = ' '.join(flattened_pinyin_text)
             elif count % 4 == 1:
                 if entry.get():
                     front_subtext = f"({entry.get()})"
@@ -150,16 +164,24 @@ class App(customtkinter.CTk):
 
         pdf.exportPdf(folder_path)
 
+    def update_translator(self, *args):
+        end_language = self.end_language_menu.get()
+        self.end_language = end_language
+
+        if end_language == "Japanese":
+            self.translator = Translator(from_lang="en", to_lang="ja")
+            self.kks = pykakasi.kakasi()
+        elif end_language == "Chinese (Mandarin)":
+            self.translator = Translator(from_lang="en", to_lang="zh")
 
     def translate_mode_switch_event(self):
         translate_mode_state = self.translate_mode_switch.get()
 
-        if(translate_mode_state == 1):
+        if translate_mode_state == 1:
             self.start_language_menu.configure(state='normal')
             self.end_language_menu.configure(state='normal')
 
-            self.translator = Translator(from_lang="en", to_lang="ja")
-            self.kks = pykakasi.kakasi()
+            self.update_translator()
 
             for count, entry in enumerate(self.card_entries):
                 if count % 4 == 2:
@@ -200,8 +222,7 @@ class App(customtkinter.CTk):
                     self.card_entries[-4 + count].insert(0, element)
 
         file.close()
-        
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-    
