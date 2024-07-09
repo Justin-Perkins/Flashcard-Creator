@@ -8,10 +8,10 @@ from translate import Translator
 import pykakasi
 
 class Csv:
-    def __init__(self, list):
+    def __init__(self, list, translator):
         self.data = list
 
-        self.translator = Translator(from_lang="en", to_lang="ja")
+        self.translator = translator
         self.kks = pykakasi.kakasi()
     
     def translate_text(self, text):

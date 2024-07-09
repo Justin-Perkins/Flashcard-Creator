@@ -93,11 +93,15 @@ class Card:
         self.back.drawFace(c)
 
 class Pdf:
-    def __init__(self, filename):
+    def __init__(self, filename, ending_language):
         self.filename = filename
         # Register the fonts
-        registerFont(TTFont("Noto Sans Bold", "fonts\\Noto_Sans_JP\\static\\NotoSansJP-Bold.ttf"))
         registerFont(TTFont("Noto Sarif", "fonts\\Noto_Serif\\static\\NotoSerif-Regular.ttf"))
+
+        if ending_language == "Japanese":
+            registerFont(TTFont("Noto Sans Bold", "fonts\\Noto_Sans_JP\\static\\NotoSansJP-Bold.ttf"))
+        elif ending_language == "Chinese (Mandarin)":
+            registerFont(TTFont("Noto Sans Bold", "fonts\\Noto_Sans_SC\\static\\NotoSansSC-Bold.ttf"))
 
         # Create the canvas
         self.my_canvas = canvas.Canvas(f"{filename}.pdf", pagesize=letter)

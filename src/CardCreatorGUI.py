@@ -8,7 +8,7 @@ from itertools import chain
 # Third-Party Library Imports
 import customtkinter
 from translate import Translator
-from pypinyin import lazy_pinyin, pinyin
+from pypinyin import pinyin
 import pykakasi
 
 # Custom Class Imports
@@ -23,11 +23,10 @@ class App(customtkinter.CTk):
         super().__init__()
 
         # Supported Languages
-        self.supported_starting_languages_abv = ["en"]
         self.supported_starting_languages = ["English"]
-
-        self.supported_ending_languages_abv = ["jp", "zh"]
         self.supported_ending_languages = ["Japanese", "Chinese (Mandarin)"]
+
+        self.supported_language_abvs = {"English" : "en", "Japanese" : "jp", "Chinese (Mandarin)" : "zh"}
 
         # Configure window
         self.title("Flashcard Creator")
@@ -122,7 +121,7 @@ class App(customtkinter.CTk):
             print("Exporting process canceled.")
             return
 
-        pdf = cp.Pdf(file_name)
+        pdf = cp.Pdf(file_name, self.end_language)
         translate_mode = self.translate_mode_switch.get()
 
         for count, entry in enumerate(self.card_entries):
@@ -202,7 +201,7 @@ class App(customtkinter.CTk):
         folder_path = filedialog.askdirectory()
         translate_mode_state = self.translate_mode_switch.get()
 
-        csv = CreateCSV.Csv(self.card_entries)
+        csv = CreateCSV.Csv(self.card_entries, self.translator)
         csv.exportCSV('cardSet.csv', folder_path, translate_mode_state)
 
     def import_from_csv_button_event(self):
